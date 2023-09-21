@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adivinhação</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #f0f0f0; /* Cor de fundo padrão */
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Define cores de fundo para acerto e erro */
+    body.verde {
+        background-color: #00FF00;
+    }
+
+    body.vermelho {
+        background-color: #FF0000;
+    }
+
+    h1 {
+        color: #000000;
+        margin-top: 20px;
+    }
+
+    p {
+        color: #000000;
+    }
+
+    input[type="number"] {
+        padding: 5px;
+        font-size: 16px;
+    }
+
+    button {
+        background-color: #007BFF;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    #result {
+        font-size: 18px;
+        margin-top: 10px;
+        color: #000000;
+    }
+
+    .subcaixa {
+        display: flex;
+        justify-content: center;
+    }
+
+    .caixa {
+        background-color: #f0f0f0;
+        height: 250px;
+        width: 400px;
+        margin-top: 110px;
+        transition: background-color 0.5s;
+        position: relative; /* Adiciona posição relativa */
+    }
+
+    /* Define estilo para o botão Recomeçar */
+    #recomecar {
+        position: absolute;
+        bottom: 10px; /* Ajusta a distância da parte inferior da caixa */
+        left: 50%;
+        transform: translateX(-50%); /* Centraliza horizontalmente */
+    }
+    .img {
+        margin-left: 900px;
+        margin-top: -300px;
+        width: 500px;
+        position: relative; /* Adiciona posição relativa */
+    }
+    .img img {
+        display: none; /* Oculta as imagens por padrão */
+        position: absolute; /* Adiciona posição absoluta para controle */
+    }
+    .acerto{
+        margin-left: 40px;
+    }
+    .comeco {
+        display: block; /* Mostra a imagem de início por padrão */
+    }
+    
+    </style>
+</head>
+<body>
+    <div class="subcaixa">
+        <div class="caixa">
+            <h1>Adivinhação</h1>
+        
+            <p>Tente adivinhar o número entre 1 e 100:</p>
+            <input type="number" id="guess" min="1" max="100">
+            <button onclick="checkGuess()">Verificar Palpite</button>
+            <p id="result"></p>
+            <button id="recomecar" onclick="recomecar()">Recomeçar</button> <!-- Botão Recomeçar dentro da caixa -->
+        </div>
+    </div>
+
+    <div class="img">
+        <img class="comeco" src="img/akinator_1_defi1.png" alt="">
+        <img class="acerto" src="img/akinator__1_-removebg-preview.png" alt="">
+        <img class="erro" src="img/AKINATOR-removebg-preview.png" alt="">
+    </div>
+    
+    <script>
+// Garante que a imagem de início seja visível no início
+// Garante que a imagem de início seja visível no início
+document.querySelector('.comeco').style.display = 'block';
+
+let numeroSorteado = Math.floor(Math.random() * 100) + 1;
+console.log(`Número sorteado: ${numeroSorteado}`); // Adicione esta linha para exibir o número sorteado no console
+
+let tentativas = 0;
+const maxTentativas = 5;
+
+function checkGuess() {
+    const palpite = parseInt(document.getElementById('guess').value);
+    const resultado = document.getElementById('result');
+
+    if (isNaN(palpite) || palpite < 1 || palpite > 100) {
+        resultado.textContent = 'Por favor, insira um número válido entre 1 e 100.';
+    } else {
+        tentativas++;
+        if (palpite === numeroSorteado) {
+            resultado.textContent = `Parabéns! Você acertou o número ${numeroSorteado} em ${tentativas} tentativa(s).`;
+            document.getElementById('guess').disabled = true;
+            document.body.classList.remove('vermelho');
+            document.body.classList.add('verde');
+            setTimeout(() => {
+                document.body.classList.remove('verde');
+            }, 1000);
+            // Exibe a imagem de acerto e oculta a imagem de início e erro
+            document.querySelector('.comeco').style.display = 'none';
+            document.querySelector('.acerto').style.display = 'block';
+            document.querySelector('.erro').style.display = 'none'; // Adicione esta linha para ocultar a imagem de erro
+        } else {
+            const diferenca = Math.abs(numeroSorteado - palpite);
+            let dica = '';
+            if (palpite < numeroSorteado) {
+                dica = 'Maior';
+            } else {
+                dica = 'Menor';
+            }
+            if (tentativas === maxTentativas) {
+                resultado.textContent = `Suas ${maxTentativas} tentativas acabaram. O número correto era ${numeroSorteado}.`;
+                document.getElementById('guess').disabled = true;
+                document.body.classList.remove('verde');
+                document.body.classList.add('vermelho');
+                setTimeout(() => {
+                    document.body.classList.remove('vermelho');
+                }, 1000);
+                // Exibe a imagem de erro e oculta a imagem de início e acerto
+                document.querySelector('.comeco').style.display = 'none';
+                document.querySelector('.acerto').style.display = 'none';
+                document.querySelector('.erro').style.display = 'block';
+            } else {
+                resultado.textContent = `É um número ${dica}. Tentativa ${tentativas} de ${maxTentativas}.`;
+                document.body.classList.remove('verde');
+                document.body.classList.add('vermelho');
+                setTimeout(() => {
+                    document.body.classList.remove('vermelho');
+                }, 1000);
+                // Exibe a imagem de erro e oculta a imagem de início e acerto
+                document.querySelector('.comeco').style.display = 'none';
+                document.querySelector('.acerto').style.display = 'none';
+                document.querySelector('.erro').style.display = 'block';
+            }
+        }
+    }
+}
+
+function recomecar() {
+    numeroSorteado = Math.floor(Math.random() * 100) + 1;
+    tentativas = 0;
+    document.getElementById('guess').value = '';
+    document.getElementById('guess').disabled = false;
+    document.getElementById('result').textContent = '';
+    document.body.classList.remove('verde');
+    document.body.classList.remove('vermelho');
+    // Oculta as imagens de acerto e erro e mostra a imagem de início
+    document.querySelector('.comeco').style.display = 'block';
+    document.querySelector('.acerto').style.display = 'none';
+    document.querySelector('.erro').style.display = 'none';
+}
+
+
+    </script>
+</body>
+</html>
+
+
